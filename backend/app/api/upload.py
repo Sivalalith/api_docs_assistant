@@ -1,11 +1,10 @@
 from fastapi import APIRouter
 from app.schemas.document import UploadResponse
+from app.services.upload_service import UploadService
 
 router = APIRouter(prefix="/upload", tags=["Upload"])
 
 
 @router.post("", response_model=UploadResponse)
 def upload_documents():
-    return UploadResponse(
-        message="Upload endpoint working"
-    )
+    return UploadService.upload_documents()
