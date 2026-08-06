@@ -1,3 +1,11 @@
+import { uploadDocuments } from "../services/uploadService";
+
+const handleUpload = async () => {
+  const response = await uploadDocuments();
+
+  console.log("BE response: ", response);
+};
+
 function FileUpload() {
   return (
     <section className="bg-white rounded-2xl shadow-md p-6">
@@ -30,6 +38,7 @@ function FileUpload() {
         <p className="text-slate-500 mt-4 mb-4">or</p>
 
         <button
+          onClick={handleUpload}
           className="
             bg-blue-600
             hover:bg-blue-700

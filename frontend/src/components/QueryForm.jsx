@@ -1,9 +1,22 @@
 import { useState } from "react";
+import { askQuestion } from "../services/queryService";
+
+const handleSubmit = async () => {
+  const response = await askQuestion(query);
+
+  console.log("BE response: ", response);
+};
 
 function QueryForm() {
   const MAX_CHARACTERS = 1000;
 
   const [query, setQuery] = useState("");
+
+  const handleSubmit = async () => {
+    const response = await askQuestion(query);
+
+    console.log("BE response: ", response);
+  };
 
   return (
     <section className="bg-white rounded-2xl shadow-md p-6">
@@ -37,6 +50,9 @@ function QueryForm() {
         </p>
 
         <button
+          onClick={() => {
+            handleSubmit(query);
+          }}
           className="
             bg-blue-600
             hover:bg-blue-700

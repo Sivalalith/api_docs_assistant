@@ -1,28 +1,23 @@
-const documents = [
-  {
-    id: 1,
-    name: "payment-api.pdf",
-    type: "PDF",
-    size: "2.4 MB",
-    icon: "📕",
-  },
-  {
-    id: 2,
-    name: "openapi.yaml",
-    type: "YAML",
-    size: "68 KB",
-    icon: "📗",
-  },
-  {
-    id: 3,
-    name: "stripe_collection.json",
-    type: "JSON",
-    size: "145 KB",
-    icon: "🟨",
-  },
-];
+import { useEffect, useState } from "react";
+import { getDocuments, deleteDocument } from "../services/documentService";
 
 function UploadedDocuments() {
+  const [documents, setDocuments] = useState([]);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  const fetchDocuments = async () => {
+    const data = await getDocuments();
+    setDocuments(data);
+  };
+
+  const handleDelete = async (id) => {
+    await deleteDocument(id);
+    fetchDocuments();
+  };
+
   return (
     <section className="bg-white rounded-2xl shadow-md p-6">
       <div className="flex justify-between items-center mb-6">
@@ -50,7 +45,7 @@ function UploadedDocuments() {
             "
           >
             <div className="flex items-center gap-4">
-              <div className="text-3xl">{doc.icon}</div>
+              <div className="text-3xl">📁</div>
 
               <div>
                 <h4 className="font-semibold text-slate-800">{doc.name}</h4>
@@ -62,6 +57,7 @@ function UploadedDocuments() {
             </div>
 
             <button
+              onClick={() => handleDelete(doc.id)}
               className="
                 bg-red-50
                 text-red-600
@@ -73,7 +69,7 @@ function UploadedDocuments() {
                 transition
               "
             >
-              🗑 Delete
+              🗑️ Delete
             </button>
           </div>
         ))}
