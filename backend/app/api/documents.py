@@ -6,8 +6,8 @@ router = APIRouter(prefix="/documents", tags=["Documents"])
 
 
 @router.get("", response_model=list[DocumentResponse])
-def get_documents():
-    return DocumentService.get_documents()
+async def get_documents():
+    return await DocumentService.get_documents()
 
 
 @router.delete("/{document_id}")
