@@ -1,3 +1,4 @@
+import uuid
 from pathlib import Path
 
 UPLOAD_DIR = Path("uploads")
@@ -12,7 +13,7 @@ class DocumentService:
         if not UPLOAD_DIR.exists():
             return documents
 
-        for index, file_ in enumerate(UPLOAD_DIR.iterdir(), start=1):
+        for file_ in UPLOAD_DIR.iterdir():
 
             if not file_.is_file():
                 continue
@@ -37,7 +38,7 @@ class DocumentService:
 
             documents.append(
                 {
-                    "id": index,
+                    "id": str(uuid.uuid5(uuid.NAMESPACE_URL, file_.name)),
                     "name": file_.name,
                     "type": file_types.get(extension, "Unknown"),
                     "size": size_str,
@@ -47,7 +48,33 @@ class DocumentService:
         return documents
 
     @staticmethod
-    def delete_document(document_id: int):
+    async def delete_document(document_id: str):
+
+        if not UPLOAD_DIR.exists():
+            return {
+                "message": "Uploads folder not found."
+            }
+
+        for file_ in UPLOAD_DIR.iterdir():
+
+            if not file_.is_file():
+                continue
+
+            file_uuid = str(
+                uuid.uuid5(
+                    uuid.NAMESPACE_URL,
+                    file_.name,
+                )
+            )
+
+            if file_uuid == document_id:
+
+                file_.unlink()
+
+                return {
+                    "message": f"{file_.name} deleted successfully."
+                }
+
         return {
-            "message": f"Document {document_id} deleted"
+            "message": "Document not found."
         }

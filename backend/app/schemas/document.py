@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class DocumentResponse(BaseModel):
-    id: int
+    id: str # using uuid()
     name: str
     type: str
     size: str
@@ -11,3 +11,6 @@ class DocumentResponse(BaseModel):
 class UploadResponse(BaseModel):
     message: str
     uploaded_files: list[str]
+    
+class DeleteResponse(BaseModel):
+    message: str
