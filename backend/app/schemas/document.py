@@ -10,3 +10,4 @@ class DocumentResponse(BaseModel):
 
 class UploadResponse(BaseModel):
     message: str
+    uploaded_files: list[str]
