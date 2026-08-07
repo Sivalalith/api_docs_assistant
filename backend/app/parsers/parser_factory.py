@@ -20,10 +20,17 @@ class ParserFactory:
 
         if extension == ".json":
 
-            # Temporary.
-            # Later we'll detect whether
-            # it's OpenAPI or Postman.
+            import json
 
-            return OpenAPIParser.parse(file_path)
+            with open(file_path, "r", encoding="utf-8") as file:
+                data = json.load(file)
+
+            if "openapi" in data or "swagger" in data:
+                return OpenAPIParser.parse(file_path)
+
+            if "info" in data and "item" in data:
+                return PostmanParser.parse(file_path)
+
+            return "Unknown JSON format."
 
         return "Unsupported file."
