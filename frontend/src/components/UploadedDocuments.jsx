@@ -1,21 +1,23 @@
-import { useEffect, useState } from "react";
-import { getDocuments, deleteDocument } from "../services/documentService";
+import { useState } from "react";
+import { deleteDocument } from "../services/documentService";
 
-function UploadedDocuments() {
-  const [documents, setDocuments] = useState([]);
+import LoadingSpinner from "./LoadingSpinner";
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-
-  const fetchDocuments = async () => {
-    const data = await getDocuments();
-    setDocuments(data);
-  };
+function UploadedDocuments({ documents, fetchDocuments }) {
+  const [loadingId, setLoadingId] = useState(null);
 
   const handleDelete = async (id) => {
-    await deleteDocument(id);
-    fetchDocuments();
+    try {
+      setLoadingId(id);
+
+      await deleteDocument(id);
+
+      await fetchDocuments();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingId(null);
+    }
   };
 
   return (
@@ -29,10 +31,15 @@ function UploadedDocuments() {
       </div>
 
       <div className="">
-        {documents.map((doc) => (
-          <div
-            key={doc.id}
-            className="
+        {documents.length === 0 ? (
+          <p className="text-center text-slate-500 py-8">
+            No documents uploaded yet.
+          </p>
+        ) : (
+          documents.map((doc) => (
+            <div
+              key={doc.id}
+              className="
               flex
               items-center
               justify-between
@@ -43,22 +50,24 @@ function UploadedDocuments() {
               hover:shadow-md
               transition
             "
-          >
-            <div className="flex items-center gap-4">
-              <div className="text-3xl">📁</div>
+            >
+              <div className="flex items-center gap-4">
+                <div className="text-3xl">📁</div>
 
-              <div>
-                <h4 className="font-semibold text-slate-800">{doc.name}</h4>
+                <div>
+                  <h4 className="font-semibold text-slate-800">{doc.name}</h4>
 
-                <p className="text-sm text-slate-500">
-                  {doc.type} • {doc.size}
-                </p>
+                  <p className="text-sm text-slate-500">
+                    {doc.type} • {doc.size}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <button
-              onClick={() => handleDelete(doc.id)}
-              className="
+              <button
+                onClick={() => handleDelete(doc.id)}
+                disabled={loadingId === doc.id}
+                className="
+                min-w-[140px]
                 bg-red-50
                 text-red-600
                 hover:bg-red-200
@@ -67,12 +76,19 @@ function UploadedDocuments() {
                 rounded-lg
                 font-medium
                 transition
+                disabled:bg-red-200
+                disabled:cursor-not-allowed
               "
-            >
-              🗑️ Delete
-            </button>
-          </div>
-        ))}
+              >
+                {loadingId === doc.id ? (
+                  <LoadingSpinner text="Deleting..." />
+                ) : (
+                  "🗑️ Delete"
+                )}
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </section>
   );
