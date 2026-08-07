@@ -1,6 +1,8 @@
 from pathlib import Path
 from fastapi import UploadFile
 
+from app.parsers.parser_factory import ParserFactory
+
 UPLOAD_DIR = Path("uploads")
 
 ALLOWED_EXTENSIONS = {
@@ -32,6 +34,12 @@ class UploadService:
 
             with open(destination, "wb") as f:
                 f.write(contents)
+                
+            raw_text = ParserFactory.parse(destination)
+
+            print("\n========== Extracted Text ==========\n")
+            print(raw_text)
+            print("\n====================================\n")
 
             uploaded_files.append(file.filename)
 
