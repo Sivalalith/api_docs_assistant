@@ -31,6 +31,8 @@ class ParserFactory:
             if "info" in data and "item" in data:
                 return PostmanParser.parse(file_path)
 
-            return "Unknown JSON format."
+            raise ValueError(
+    "Unknown JSON format. Expected OpenAPI or Postman Collection."
+)
 
-        return "Unsupported file."
+        raise ValueError(f"Unsupported file type: {extension}")

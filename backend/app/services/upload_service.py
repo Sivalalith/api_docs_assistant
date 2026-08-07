@@ -35,12 +35,17 @@ class UploadService:
             with open(destination, "wb") as f:
                 f.write(contents)
                 
-            raw_text = ParserFactory.parse(destination)
+            try:
+                raw_text = ParserFactory.parse(destination)
 
-            print("\n========== Extracted Text ==========\n")
-            print(raw_text)
-            print("\n====================================\n")
-
+                print("\n" + "=" * 80)
+                print(f"Parsed File: {file.filename}")
+                print("=" * 80)
+                print(raw_text)
+                print("=" * 80 + "\n")
+            except ValueError as error:
+                print(error)
+                
             uploaded_files.append(file.filename)
 
         return {
