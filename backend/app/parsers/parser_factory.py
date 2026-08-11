@@ -8,7 +8,7 @@ from app.parsers.postman_parser import PostmanParser
 class ParserFactory:
 
     @staticmethod
-    def parse(file_path: Path) -> str:
+    def parse(file_path: Path):
 
         extension = file_path.suffix.lower()
 
