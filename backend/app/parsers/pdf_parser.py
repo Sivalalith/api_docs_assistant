@@ -1,17 +1,33 @@
 from pathlib import Path
-import fitz
+
+import pymupdf
+
 
 class PDFParser:
 
     @staticmethod
-    def parse(file_path: Path) -> str:
-        document = fitz.open(file_path)
+    def parse(file_path: Path):
+        document = pymupdf.open(file_path)
 
-        extracted_text = []
+        documents = []
 
-        for page in document:
-            extracted_text.append(page.get_text())
+        for page_number, page in enumerate(document, start=1):
+            text = page.get_text()
+
+            if not text.strip():
+                continue
+
+            documents.append(
+                {
+                    "text": text,
+                    "metadata": {
+                        "source_type": "pdf",
+                        "file_name": file_path.name,
+                        "page": page_number,
+                    },
+                }
+            )
 
         document.close()
 
-        return "\n".join(extracted_text)
+        return documents
