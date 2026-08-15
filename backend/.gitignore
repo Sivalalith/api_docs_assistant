@@ -3,4 +3,5 @@ data/
 test_chunker.py
 test_embedder.py
 test_vector_store.py
+test_indexing.py
 .env
