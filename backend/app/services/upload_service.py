@@ -3,6 +3,8 @@ from fastapi import UploadFile
 
 from app.parsers.parser_factory import ParserFactory
 
+import uuid
+
 UPLOAD_DIR = Path("uploads")
 
 ALLOWED_EXTENSIONS = {
@@ -36,7 +38,8 @@ class UploadService:
                 f.write(contents)
                 
             try:
-                raw_text = ParserFactory.parse(destination)
+                doc_id = str(uuid.uuid4())
+                raw_text = ParserFactory.parse(destination, doc_id)
 
                 print("\n" + "=" * 80)
                 print(f"Parsed File: {file.filename}")

@@ -83,7 +83,7 @@ class PDFParser:
        
 
     @staticmethod
-    def parse(file_path: Path):
+    def parse(file_path: Path, doc_id: str):
         try:
             document = pymupdf.open(file_path)
         except Exception as exc:
@@ -122,6 +122,7 @@ class PDFParser:
                         # endpoint (e.g. intro/overview pages).
                         "method": method,
                         "endpoint": endpoint,
+                        "doc_id":  doc_id
                     },
                 }
             )

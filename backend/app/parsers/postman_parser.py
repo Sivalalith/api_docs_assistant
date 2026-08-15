@@ -4,7 +4,9 @@ import json
 class PostmanParser:
 
     @staticmethod
-    def parse(file_path):
+    def parse(file_path, doc_id: str):
+        
+        print("POSTMAN PARSER received doc_id:", doc_id)
         documents = []
 
         with open(file_path, "r", encoding="utf-8") as f:
@@ -15,7 +17,8 @@ class PostmanParser:
         PostmanParser.parse_items(
             data.get("item", []),
             documents,
-            collection_name
+            collection_name,
+            doc_id
         )
 
         return documents
@@ -25,7 +28,8 @@ class PostmanParser:
         items,
         documents,
         collection_name,
-        folder_path=None
+        doc_id,
+        folder_path=None,
     ):
         folder_path = folder_path or []
 
@@ -41,6 +45,7 @@ class PostmanParser:
                     item["item"],
                     documents,
                     collection_name,
+                    doc_id,
                     current_folder
                 )
 
@@ -134,6 +139,7 @@ class PostmanParser:
                         text_parts.append(response_body)
 
             # Document with searchable text + metadata
+            print("POSTMAN PARSER metadata doc_id:", doc_id)
             document = {
                 "text": "\n".join(text_parts),
                 "metadata": {
@@ -143,6 +149,7 @@ class PostmanParser:
                     "method": method,
                     "name": name,
                     "folder": "/".join(folder_path),
+                    "doc_id":  doc_id
                 },
             }
 

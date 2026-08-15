@@ -8,15 +8,15 @@ from app.parsers.postman_parser import PostmanParser
 class ParserFactory:
 
     @staticmethod
-    def parse(file_path: Path):
+    def parse(file_path: Path, doc_id: str):
 
         extension = file_path.suffix.lower()
 
         if extension == ".pdf":
-            return PDFParser.parse(file_path)
+            return PDFParser.parse(file_path, doc_id)
 
         if extension in [".yaml", ".yml"]:
-            return OpenAPIParser.parse(file_path)
+            return OpenAPIParser.parse(file_path, doc_id)
 
         if extension == ".json":
 
@@ -26,10 +26,10 @@ class ParserFactory:
                 data = json.load(file)
 
             if "openapi" in data or "swagger" in data:
-                return OpenAPIParser.parse(file_path)
+                return OpenAPIParser.parse(file_path, doc_id)
 
             if "info" in data and "item" in data:
-                return PostmanParser.parse(file_path)
+                return PostmanParser.parse(file_path, doc_id)
 
             raise ValueError(
     "Unknown JSON format. Expected OpenAPI or Postman Collection."

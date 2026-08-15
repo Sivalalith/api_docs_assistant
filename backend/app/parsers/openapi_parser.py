@@ -6,7 +6,7 @@ import yaml
 class OpenAPIParser:
 
     @staticmethod
-    def parse(file_path: Path):
+    def parse(file_path: Path, doc_id: str):
         documents = []
 
         with open(file_path, "r", encoding="utf-8") as f:
@@ -298,6 +298,7 @@ class OpenAPIParser:
                         "method": method,
                         "operation_id": operation_id,
                         "tags": tags,
+                        "doc_id":  doc_id
                     },
                 }
 
