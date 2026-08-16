@@ -50,8 +50,11 @@ class UploadService:
                 
                 uploaded_files.append(file.filename)
                 
-            except ValueError as error:
-                print(error)
+            except Exception as error:
+                print(f"Failed to process {file.filename}: {error}")
+                
+            finally:
+                destination.unlink(missing_ok=True)
 
         return {
             "message": "Files uploaded successfully.",

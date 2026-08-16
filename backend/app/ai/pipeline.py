@@ -44,4 +44,5 @@ class Pipeline:
             "chunk_count": len(chunks),
         }
     
-    # TODO: remove_document() workflow
+    def remove_document(self, doc_id: str):
+        self.vector_store.delete_document(doc_id)

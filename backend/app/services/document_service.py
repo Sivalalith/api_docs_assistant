@@ -1,47 +1,45 @@
-import uuid
 from pathlib import Path
 
-UPLOAD_DIR = Path("uploads")
+from app.ai.vector_store import get_vector_store
+
+
+FILE_TYPE_LABELS = {
+    ".pdf": "PDF",
+    ".yaml": "YAML",
+    ".yml": "YAML",
+    ".json": "JSON",
+}
+
+
+def _format_size(size_bytes: int) -> str:
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    else:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
 
 
 class DocumentService:
 
     @staticmethod
     async def get_documents():
+        vector_store = get_vector_store()
+        records = vector_store.list_documents()
+
         documents = []
 
-        if not UPLOAD_DIR.exists():
-            return documents
-
-        for file_ in UPLOAD_DIR.iterdir():
-
-            if not file_.is_file():
-                continue
-
-            extension = file_.suffix.lower()
-
-            file_types = {
-                ".pdf": "PDF",
-                ".yaml": "YAML",
-                ".yml": "YAML",
-                ".json": "JSON",
-            }
-
-            size = file_.stat().st_size
-
-            if size < 1024:
-                size_str = f"{size} B"
-            elif size < 1024 * 1024:
-                size_str = f"{size / 1024:.1f} KB"
-            else:
-                size_str = f"{size / (1024 * 1024):.1f} MB"
+        for record in records:
+            file_name = record.get("file_name", "Unknown")
+            extension = Path(file_name).suffix.lower()
 
             documents.append(
                 {
-                    "id": str(uuid.uuid5(uuid.NAMESPACE_URL, file_.name)),
-                    "name": file_.name,
-                    "type": file_types.get(extension, "Unknown"),
-                    "size": size_str,
+                    "id": record.get("doc_id"),
+                    "name": file_name,
+                    "type": FILE_TYPE_LABELS.get(extension, "Unknown"),
+                    "size": _format_size(record.get("file_size", 0)),
+                    "uploaded_at": record.get("uploaded_at"),
                 }
             )
 
@@ -49,32 +47,11 @@ class DocumentService:
 
     @staticmethod
     async def delete_document(document_id: str):
+        vector_store = get_vector_store()
 
-        if not UPLOAD_DIR.exists():
-            return {
-                "message": "Uploads folder not found."
-            }
+        try:
+            vector_store.delete_document(document_id)
+        except Exception as error:
+            return {"message": f"Failed to delete document: {error}"}
 
-        for file_ in UPLOAD_DIR.iterdir():
-
-            if not file_.is_file():
-                continue
-
-            file_uuid = str(
-                uuid.uuid5(
-                    uuid.NAMESPACE_URL,
-                    file_.name,
-                )
-            )
-
-            if file_uuid == document_id:
-
-                file_.unlink()
-
-                return {
-                    "message": f"{file_.name} deleted successfully."
-                }
-
-        return {
-            "message": "Document not found."
-        }
+        return {"message": "Document deleted successfully."}
