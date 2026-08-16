@@ -1,16 +1,16 @@
 from app.parsers.parser_factory import ParserFactory
 from app.ai.chunker import GenericChunker
 from app.ai.embedder import Embedder
-from app.ai.vector_store import VectorStore
+from app.ai.vector_store import VectorStore, get_vector_store
 
 
 class Pipeline:
 
-    def __init__(self):
+    def __init__(self, vector_store: VectorStore = None):
         self.parser = ParserFactory()
         self.chunker = GenericChunker()
         self.embedder = Embedder()
-        self.vector_store = VectorStore()
+        self.vector_store = vector_store or get_vector_store()
 
     def index_document(self, file_path, doc_id):
         # 1. Parse
@@ -31,8 +31,17 @@ class Pipeline:
             embeddings=embeddings,
             metadata=[chunk["metadata"] for chunk in chunks],
         )
+        
+        # 6. Store document metadata in Qdrant
+        self.vector_store.add_document_metadata(
+            doc_id=doc_id,
+            file_name=file_path.name,
+            file_size=file_path.stat().st_size,
+        )
 
         return {
             "doc_id": doc_id,
             "chunk_count": len(chunks),
         }
+    
+    # TODO: remove_document() workflow
