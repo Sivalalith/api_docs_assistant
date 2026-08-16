@@ -1,7 +1,7 @@
 from pathlib import Path
 from fastapi import UploadFile
 
-from app.parsers.parser_factory import ParserFactory
+from app.ai.pipeline import Pipeline
 
 import uuid
 
@@ -22,6 +22,8 @@ class UploadService:
         UPLOAD_DIR.mkdir(exist_ok=True)
 
         uploaded_files = []
+        
+        pipeline = Pipeline()
 
         for file in files:
 
@@ -38,18 +40,18 @@ class UploadService:
                 f.write(contents)
                 
             try:
+                
                 doc_id = str(uuid.uuid4())
-                raw_text = ParserFactory.parse(destination, doc_id)
-
-                print("\n" + "=" * 80)
-                print(f"Parsed File: {file.filename}")
-                print("=" * 80)
-                print(raw_text)
-                print("=" * 80 + "\n")
+                
+                pipeline.index_document(
+                    destination,
+                    doc_id
+                )
+                
+                uploaded_files.append(file.filename)
+                
             except ValueError as error:
                 print(error)
-                
-            uploaded_files.append(file.filename)
 
         return {
             "message": "Files uploaded successfully.",
