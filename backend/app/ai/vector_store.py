@@ -118,6 +118,20 @@ class VectorStore:
                 f"Failed to upsert {len(points)} chunk(s) into "
                 f"'{self.CHUNKS_COLLECTION_NAME}': {error}"
             ) from error
+            
+    def search_documents(
+    self,
+    query_vector: list[float],
+    limit: int = 3,
+):
+        results = self.client.query_points(
+            collection_name=self.CHUNKS_COLLECTION_NAME,
+            query=query_vector,
+            limit=limit,
+            with_payload=True,
+        )
+
+        return results.points
     
     def add_document_metadata(
     self,
