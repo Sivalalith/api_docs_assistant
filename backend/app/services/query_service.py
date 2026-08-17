@@ -1,16 +1,25 @@
+from app.ai.pipeline import Pipeline
+
 class QueryService:
 
     @staticmethod
-    def query(question: str):
+    async def query(user_query: str):
 
-        print(question)
+        pipeline = Pipeline()
+
+        results = pipeline.answer_query(user_query)
 
         return {
-            "endpoint": "POST /login",
-            "headers": "Authorization: Bearer <token>",
-            "description": "Dummy AI response.",
-            "code": """{
-  "email": "user@example.com",
-  "password": "password123"
-}""",
+            "results": [
+                {
+                    "score": result.score,
+                    "text": result.payload.get("text"),
+                    "metadata": {
+                        key: value
+                        for key, value in result.payload.items()
+                        if key != "text"
+                    },
+                }
+                for result in results
+            ]
         }
