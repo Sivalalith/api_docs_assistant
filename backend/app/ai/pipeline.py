@@ -46,3 +46,6 @@ class Pipeline:
     
     def remove_document(self, doc_id: str):
         self.vector_store.delete_document(doc_id)
+        
+    def embed_query(self, query: str):
+        return self.embedder.embed([query])[0]
