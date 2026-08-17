@@ -47,5 +47,14 @@ class Pipeline:
     def remove_document(self, doc_id: str):
         self.vector_store.delete_document(doc_id)
         
-    def embed_query(self, query: str):
-        return self.embedder.embed([query])[0]
+    def answer_query(self, query: str, limit: int = 3):
+        # 1. Embed query
+        query_vector = self.embedder.embed([query])[0]
+
+        # 2. Retrieve relevant chunks
+        results = self.vector_store.search_documents(
+            query_vector=query_vector,
+            limit=limit,
+        )
+
+        return results
