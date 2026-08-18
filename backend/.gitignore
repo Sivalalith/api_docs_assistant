@@ -5,4 +5,5 @@ test_embedder.py
 test_vector_store.py
 test_indexing.py
 test_query_embedding.py
+test_prompt_builder.py
 .env
