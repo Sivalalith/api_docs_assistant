@@ -1,23 +1,6 @@
 class PromptBuilder:
-
-    @staticmethod
-    def build(
-        query: str,
-        retrieved_chunks: list,
-    ) -> str:
-
-        context_parts = []
-
-        for chunk in retrieved_chunks:
-            text = chunk.payload.get("text", "")
-
-            if text:
-                context_parts.append(text)
-
-        context = "\n\n---\n\n".join(context_parts)
-
-        return f"""
-You are an expert API Documentation Assistant.
+    SYSTEM_PROMPT="""
+    You are an expert API Documentation Assistant.
 
 Answer the user's query using only the information provided in the retrieved API documentation context.
 
@@ -53,7 +36,26 @@ Rules:
 10. NO UNGROUNDED ANSWERS
     If the requested information is not present in the provided context, reply:
     "I'm sorry, but that information is not present in the provided API documentation."
+    """
+    
 
+    @staticmethod
+    def build(
+        query: str,
+        retrieved_chunks: list,
+    ) -> str:
+
+        context_parts = []
+
+        for chunk in retrieved_chunks:
+            text = chunk.payload.get("text", "")
+
+            if text:
+                context_parts.append(text)
+
+        context = "\n\n---\n\n".join(context_parts)
+
+        user_prompt = f"""
 <context>
 {context}
 </context>
@@ -61,3 +63,5 @@ Rules:
 User Query:
 {query}
 """.strip()
+
+        return PromptBuilder.SYSTEM_PROMPT, user_prompt

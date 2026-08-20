@@ -6,4 +6,5 @@ test_vector_store.py
 test_indexing.py
 test_query_embedding.py
 test_prompt_builder.py
+test_llm_client.py
 .env
