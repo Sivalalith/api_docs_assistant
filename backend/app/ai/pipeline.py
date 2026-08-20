@@ -2,7 +2,8 @@ from app.parsers.parser_factory import ParserFactory
 from app.ai.chunker import GenericChunker
 from app.ai.embedder import Embedder
 from app.ai.vector_store import VectorStore, get_vector_store
-
+from app.ai.prompt_builder import PromptBuilder
+from app.ai.llm_client import LLMClient
 
 class Pipeline:
 
@@ -11,6 +12,7 @@ class Pipeline:
         self.chunker = GenericChunker()
         self.embedder = Embedder()
         self.vector_store = vector_store or get_vector_store()
+        self.llm_client = LLMClient()
 
     def index_document(self, file_path, doc_id):
         # 1. Parse
@@ -57,4 +59,16 @@ class Pipeline:
             limit=limit,
         )
 
-        return results
+        # 3. Build prompts
+        system_prompt, user_prompt = PromptBuilder.build(
+            query=query,
+            retrieved_chunks=results,
+        )
+        
+        # 4. Generate answer
+        answer = self.llm_client.generate(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+        )
+
+        return answer
