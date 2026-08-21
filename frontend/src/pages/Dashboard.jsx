@@ -11,6 +11,8 @@ import { getDocuments } from "../services/documentService";
 
 function Dashboard() {
   const [documents, setDocuments] = useState([]);
+  const [query, setQuery] = useState("");
+  const [isSuggestionClicked, setIsSuggestionClicked] = useState(false);
 
   const [answer, setAnswer] = useState(""); // 1. Create state for the answer
 
@@ -28,20 +30,44 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-slate-50">
       <Header />
 
-      <main className="max-w-5xl mx-auto px-6 py-10">
+      {/* Hero — stays narrow and centered */}
+      <div className="max-w-3xl mx-auto px-6 pt-8 pb-4">
         <Hero />
+      </div>
 
-        <div className="mt-10 space-y-8">
-          <FileUpload fetchDocuments={fetchDocuments} />
-          <UploadedDocuments
-            documents={documents}
-            fetchDocuments={fetchDocuments}
-          />
-          <QueryForm setAnswer={setAnswer} />
-          {answer && <AnswerCard answer={answer} />}
+      {/* Main content — much wider */}
+      <main className="max-w-7xl mx-auto px-6 pb-12">
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left column — Documents */}
+          <div className="space-y-6 lg:col-span-5 bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm">
+            <div>
+              <FileUpload fetchDocuments={fetchDocuments} />
+            </div>
+            <div className="border-t border-slate-100 pt-6">
+              <UploadedDocuments
+                documents={documents}
+                fetchDocuments={fetchDocuments}
+              />
+            </div>
+          </div>
+          {/* Right column — Query & Answer */}
+          <div className="space-y-6 lg:col-span-7">
+            <QueryForm
+              query={query}
+              setQuery={setQuery}
+              setAnswer={setAnswer}
+              isSuggestionClicked={isSuggestionClicked}
+              setIsSuggestionClicked={setIsSuggestionClicked}
+            />
+            <AnswerCard
+              setQuery={setQuery}
+              setIsSuggestionClicked={setIsSuggestionClicked}
+              answer={answer}
+            />
+          </div>
         </div>
       </main>
     </div>

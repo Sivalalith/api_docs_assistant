@@ -67,23 +67,35 @@ function UploadedDocuments({ documents, fetchDocuments }) {
                 onClick={() => handleDelete(doc.id)}
                 disabled={loadingId === doc.id}
                 className="
-                min-w-[140px]
-                bg-red-50
-                text-red-600
-                hover:bg-red-200
-                px-4
-                py-2
-                rounded-lg
-                font-medium
-                transition
-                disabled:bg-red-200
-                disabled:cursor-not-allowed
-              "
+                /* Layout & Fluid Sizing */
+    flex items-center justify-center gap-2
+    w-auto sm:min-w-[110px]
+    px-2 sm:px-4 py-2
+    
+    /* Styles & Colors */
+    bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-medium transition
+    
+    /* Disabled States */
+    disabled:bg-red-100 disabled:opacity-70 disabled:cursor-not-allowed
+  "
+                aria-label="Delete document"
               >
                 {loadingId === doc.id ? (
-                  <LoadingSpinner text="Deleting..." />
+                  <>
+                    {/* On mobile, show just the spinner wheel icon. On desktop, show full component */}
+                    <div className="sm:hidden">
+                      <LoadingSpinner text="" />
+                    </div>
+                    <div className="hidden sm:block">
+                      <LoadingSpinner text="Deleting..." />
+                    </div>
+                  </>
                 ) : (
-                  "🗑️ Delete"
+                  <>
+                    <span>🗑️</span>
+                    {/* Text hides on extra-small screens, reappears on small screens and up */}
+                    <span className="hidden sm:inline">Delete</span>
+                  </>
                 )}
               </button>
             </div>

@@ -1,63 +1,8 @@
-// function AnswerCard() {
-//   const response = {
-//     endpoint: "POST /login",
-//     headers: "Authorization: Bearer <token>",
-//     description: "Authenticates the user and returns an access token.",
-//     code: `{
-//   "email": "user@example.com",
-//   "password": "password123"
-// }`,
-//   };
-
-//   const handleCopy = async () => {
-//     await navigator.clipboard.writeText(response.code);
-//   };
-
-//   return (
-//     <section className="bg-white rounded-2xl shadow-md p-6">
-//       <h3 className="text-2xl font-semibold text-slate-800 mb-6">Answer</h3>
-
-//       <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
-//         <p className="mb-3 text-slate-700">
-//           <span className="font-semibold text-blue-600">Endpoint:</span>{" "}
-//           {response.endpoint}
-//         </p>
-
-//         <p className="mb-3 text-slate-700">
-//           <span className="font-semibold text-blue-600">Headers:</span>{" "}
-//           {response.headers}
-//         </p>
-
-//         <p className="mb-5 text-slate-700">
-//           <span className="font-semibold text-blue-600">Description:</span>{" "}
-//           {response.description}
-//         </p>
-
-//         <div className="relative">
-//           <button
-//             onClick={handleCopy}
-//             className="absolute top-3 right-3 text-slate-500 hover:text-blue-600 transition"
-//             title="Copy"
-//           >
-//             📋
-//           </button>
-
-//           <pre className="bg-white border border-slate-200 rounded-lg p-5 overflow-x-auto text-sm">
-//             <code>{response.code}</code>
-//           </pre>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-// export default AnswerCard;
-
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-function AnswerCard({ answer }) {
+function AnswerCard({ answer, setQuery, setIsSuggestionClicked }) {
   const [copiedCode, setCopiedCode] = useState(null);
 
   const handleCopy = async (code, index) => {
@@ -69,11 +14,73 @@ function AnswerCard({ answer }) {
     }, 1500);
   };
 
+  // Modern Industry-Level "Bento Box" Empty State (Triggered when no answer exists)
+  if (!answer) {
+    return (
+      <div className="mt-6">
+        <h2 className="mb-3 text-lg font-semibold text-slate-900">Answer</h2>
+        <div className="rounded-xl border border-slate-200/80 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+          <div className="text-center py-6">
+            <div className="mx-auto w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-4 shadow-inner">
+              ✨
+            </div>
+            <h3 className="text-base font-semibold text-slate-900">
+              Ready to Analyze
+            </h3>
+            <p className="text-sm text-slate-500 max-w-sm mx-auto mt-1">
+              Upload documents on the left and ask a question to generate code
+              structures or documentation.
+            </p>
+          </div>
+
+          {/* Render Suggestions only if setQuestion hook is provided from parent */}
+          {setQuery && (
+            <div className="mt-4 pt-6 border-t border-slate-100">
+              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+                ⚡ Quick Suggestions
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery("How can a user log in?");
+                    setIsSuggestionClicked(true);
+                  }}
+                  className="text-left text-xs p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-blue-50/40 hover:border-blue-200 text-slate-500 hover:text-blue-700 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+                >
+                  <span className="font-semibold block mb-0.5 text-slate-800 hover:text-blue-800">
+                    User Login API
+                  </span>
+                  "How can a user log in?..."
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery("List all the possible status of pets");
+                    setIsSuggestionClicked(true);
+                  }}
+                  className="text-left text-xs p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 hover:bg-blue-50/40 hover:border-blue-200 text-slate-500 hover:text-blue-700 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+                >
+                  <span className="font-semibold block mb-0.5 text-slate-800 hover:text-blue-800">
+                    Pet Status
+                  </span>
+                  "List all the possible status of pets..."
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Active State (Triggered when an answer exists)
   return (
     <div className="mt-6">
       <h2 className="mb-3 text-xl font-semibold text-gray-900">Answer</h2>
 
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-6">
+      <div className="rounded-xl border border-blue-200 bg-blue-50 p-6 max-h-[550px] overflow-y-auto">
         <div className="prose max-w-none prose-gray">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
