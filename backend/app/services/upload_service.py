@@ -1,5 +1,5 @@
 from pathlib import Path
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 
 from app.ai.pipeline import Pipeline
 
@@ -14,10 +14,44 @@ ALLOWED_EXTENSIONS = {
     ".json",
 }
 
+MAX_FILES = 5
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+MAX_TOTAL_SIZE = 25 * 1024 * 1024  # 25 MB
+
 class UploadService:
 
     @staticmethod
     async def upload_documents(files: list[UploadFile]):
+        
+        # Validate number of files
+        if len(files) > MAX_FILES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Maximum {MAX_FILES} files can be uploaded at once.",
+            )
+            
+        # Validate file sizes before processing anything
+        total_size = 0
+            
+        for file in files:
+            file.file.seek(0, 2)
+            file_size = file.file.tell()
+            file.file.seek(0)
+
+            if file_size > MAX_FILE_SIZE:
+                raise HTTPException(
+                    status_code=413,
+                    detail=f"{file.filename} exceeds the maximum file size of 10 MB.",
+                )
+
+            total_size += file_size
+
+        if total_size > MAX_TOTAL_SIZE:
+            raise HTTPException(
+                status_code=413,
+                detail="Total upload size cannot exceed 25 MB.",
+            )
+
 
         UPLOAD_DIR.mkdir(exist_ok=True)
 
@@ -30,7 +64,10 @@ class UploadService:
             extension = Path(file.filename).suffix.lower()
 
             if extension not in ALLOWED_EXTENSIONS:
-                continue
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Unsupported file type: {file.filename}",
+                )
 
             destination = UPLOAD_DIR / file.filename
 
