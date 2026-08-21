@@ -12,6 +12,8 @@ import { getDocuments } from "../services/documentService";
 function Dashboard() {
   const [documents, setDocuments] = useState([]);
 
+  const [answer, setAnswer] = useState(""); // 1. Create state for the answer
+
   const fetchDocuments = async () => {
     try {
       const data = await getDocuments();
@@ -38,8 +40,8 @@ function Dashboard() {
             documents={documents}
             fetchDocuments={fetchDocuments}
           />
-          <QueryForm />
-          <AnswerCard />
+          <QueryForm setAnswer={setAnswer} />
+          {answer && <AnswerCard answer={answer} />}
         </div>
       </main>
     </div>

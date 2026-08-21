@@ -1,10 +1,12 @@
 import json
 
+from pathlib import Path
+
 
 class PostmanParser:
 
     @staticmethod
-    def parse(file_path, doc_id: str):
+    def parse(file_path: Path, doc_id: str):
         
         print("POSTMAN PARSER received doc_id:", doc_id)
         documents = []
@@ -18,7 +20,8 @@ class PostmanParser:
             data.get("item", []),
             documents,
             collection_name,
-            doc_id
+            doc_id,
+            file_path.name
         )
 
         return documents
@@ -29,6 +32,7 @@ class PostmanParser:
         documents,
         collection_name,
         doc_id,
+        file_name,
         folder_path=None,
     ):
         folder_path = folder_path or []
@@ -46,6 +50,7 @@ class PostmanParser:
                     documents,
                     collection_name,
                     doc_id,
+                    file_name,
                     current_folder
                 )
 
@@ -144,6 +149,7 @@ class PostmanParser:
                 "text": "\n".join(text_parts),
                 "metadata": {
                     "source_type": "postman_json",
+                    "file_name": file_name,
                     "collection": collection_name,
                     "endpoint": url,
                     "method": method,

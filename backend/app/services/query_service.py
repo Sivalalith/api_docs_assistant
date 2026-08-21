@@ -10,16 +10,5 @@ class QueryService:
         results = pipeline.answer_query(user_query)
 
         return {
-            "results": [
-                {
-                    "score": result.score,
-                    "text": result.payload.get("text"),
-                    "metadata": {
-                        key: value
-                        for key, value in result.payload.items()
-                        if key != "text"
-                    },
-                }
-                for result in results
-            ]
+             "answer": results
         }

@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { askQuery } from "../services/queryService";
 
-function QueryForm() {
+function QueryForm({ setAnswer }) {
   const MAX_CHARACTERS = 1000;
 
   const [query, setQuery] = useState("");
 
   const handleSubmit = async () => {
-    const response = await askQuery(query);
+    try {
+      const response = await askQuery(query);
 
-    console.log("BE response: ", response);
+      setAnswer(response.answer || response);
+    } catch (error) {
+      console.error("Failed to fetch query response", error);
+    }
   };
 
   return (

@@ -6,7 +6,4 @@ class QueryRequest(BaseModel):
 
 
 class QueryResponse(BaseModel):
-    endpoint: str
-    headers: str
-    description: str
-    code: str
+    answer: str
